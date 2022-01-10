@@ -1,43 +1,73 @@
 import React, { useEffect, useState } from "react"
-import { getAllCityWeather } from '../api';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
-  const [cityWeather, setCityWeather] = useState([]);
+  const [city, setCity] = useState([]);
+  const [currentCity, setCurrentCity] = useState('臺北');
+  const [weather, setWeather] = useState({});
 
-  useEffect(async () => {
-    const allCityWeather = await fetch('http://localhost:3000/api/weather').then(res => res.json()).catch(err => err);
+  useEffect(() => {
+    async function getAllCity() {
+      const data = await fetch('http://localhost:3000/api/weather').then(res => res.json()).catch(err => err);
 
-    setCityWeather(allCityWeather.weather);
+      setCity(data.weather.map(weather => weather.locationName));
+    }
+
+    getAllCity();
   }, []);
+
+  useEffect(() => {
+    async function getCityWeather() {
+      const data = await fetch('http://localhost:3000/api/weather/' + currentCity).then(res => res.json()).catch(err => err);
+
+      setWeather(data.weather.records.location[0]);
+    }
+
+    getCityWeather();
+  }, [currentCity]);
 
   return (
     <React.Fragment>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>城市</th>
-            <th>溫度</th>
-            <th>天氣</th>
-            <th>更新時間</th>
-          </tr>
-        </thead>
+      {
+        Object.keys(weather).length > 0 ? (
+          <>
+            <div className={`${styles.app} ${weather.weatherElement[1].elementValue.includes('晴') ? styles.warm : styles.cold}`}>
+              <header className={styles.header}>
+                <div className={styles.searchBox}>
+                  <select
+                    className={styles.selectBar}
+                    onChange={e => setCurrentCity(e.target.value)}
+                    value={currentCity}>
+                    {
 
-        <tbody>
-          {
-            cityWeather.map(weather => (
-              <tr key={weather.stationId} className={styles.card}>
-                <td>{weather.stationId}</td>
-                <td>{weather.locationName}</td>
-                <td>{weather.weatherElement[3].elementValue}</td>
-                <td>{weather.weatherElement[20].elementValue}</td>
-                <td>{weather.time.obsTime}</td>
-              </tr>
-            ))
-          }
-        </tbody>
-      </table>
+                      city.map(locationName => (
+                        <option key={locationName}>{locationName}</option>
+                      ))
+                    }
+                  </select>
+                </div>
+              </header>
+
+              <main className={styles.main}>
+                <div className={styles.updateTime}>
+                  {new Date(weather.time.obsTime).toDateString()}
+                </div>
+
+                <div className={styles.weatherBox}>
+                  <div className={styles.theDayWeather}>
+                    {weather.weatherElement[1].elementValue}
+                  </div>
+
+                  <div className={styles.temp}>
+                    {weather.weatherElement[0].elementValue}°C
+                  </div>
+                </div>
+              </main>
+            </div >
+            )
+          </>
+        ) : "Loading Failed!"
+      }
     </React.Fragment >
   )
 }

@@ -8,7 +8,7 @@ export default function Home() {
 
   useEffect(() => {
     async function getAllCity() {
-      const data = await fetch('http://localhost:3000/api/weather').then(res => res.json()).catch(err => err);
+      const data = await fetch('/api/weather').then(res => res.json()).catch(err => err);
 
       setCity(data.weather.map(weather => weather.locationName));
     }
@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     async function getCityWeather() {
-      const data = await fetch('http://localhost:3000/api/weather/' + currentCity).then(res => res.json()).catch(err => err);
+      const data = await fetch('/api/weather/' + currentCity).then(res => res.json()).catch(err => err);
 
       setWeather(data.weather.records.location[0]);
     }

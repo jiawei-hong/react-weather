@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { server } from "../config";
 import styles from '../styles/Home.module.css';
 
 export default function Home(props) {
@@ -7,7 +8,7 @@ export default function Home(props) {
 
   useEffect(() => {
     async function getCityWeather() {
-      const data = await fetch('/api/weather/' + currentCity).then(res => res.json()).catch(err => err);
+      const data = await fetch(`${server}api/weather/${currentCity}`).then(res => res.json()).catch(err => err);
 
       setWeather(data.weather.records.location[0]);
     }
@@ -62,7 +63,7 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-  const city = await fetch('/api/weather').then(res => res.json()).catch(err => err);
+  const city = await fetch(`${server}api/weather`).then(res => res.json()).catch(err => err);
 
   return {
     props: {

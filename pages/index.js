@@ -1,20 +1,9 @@
 import React, { useEffect, useState } from "react"
 import styles from '../styles/Home.module.css';
 
-export default function Home() {
-  const [city, setCity] = useState([]);
+export default function Home(props) {
   const [currentCity, setCurrentCity] = useState('臺北');
   const [weather, setWeather] = useState({});
-
-  useEffect(() => {
-    async function getAllCity() {
-      const data = await fetch('/api/weather').then(res => res.json()).catch(err => err);
-
-      setCity(data.weather.map(weather => weather.locationName));
-    }
-
-    getAllCity();
-  }, []);
 
   useEffect(() => {
     async function getCityWeather() {
@@ -40,8 +29,8 @@ export default function Home() {
                     value={currentCity}>
                     {
 
-                      city.map(locationName => (
-                        <option key={locationName}>{locationName}</option>
+                      props.city.map(city => (
+                        <option key={city.locationName}>{city.locationName}</option>
                       ))
                     }
                   </select>
@@ -70,4 +59,14 @@ export default function Home() {
       }
     </React.Fragment >
   )
+}
+
+export async function getStaticProps() {
+  const city = await fetch('/api/weather').then(res => res.json()).catch(err => err);
+
+  return {
+    props: {
+      city,
+    }
+  }
 }

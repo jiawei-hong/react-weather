@@ -1,7 +1,7 @@
 .app {
   font-family: 'Microsoft JhengHei';
   background-size: cover;
-  background-position: bottom;
+  background-position: center;
   transition: .4s ease;
   min-height: 100vh;
 }
